@@ -1,4 +1,6 @@
 var canvas, canvasContext;
+var carPic = document.createElement('img');
+var carPicLoaded = false;
 
 var carX = 75;
 var carSpeedX = 5;
@@ -41,6 +43,11 @@ window.onload = function() {
 
 	canvas.addEventListener('mousemove', updateMousePosition)
 
+	carPic.onload = function() {
+		carPicLoaded = true;
+	}
+	carPic.src = 'player1car.png';
+
 	carReset();
 }
 
@@ -55,13 +62,16 @@ function updateMousePosition(e) {
 }
 
 function carReset() {
+	// loop through all rows and columns and if the index we're currently at has a 2, we place
+	// the car there, then change that index to a 0 after (to make it normal road)
 	for (var eachRow = 0; eachRow < trackRows; eachRow++) {
 		for (var eachColumn = 0; eachColumn < trackColums; eachColumn++) {
 			var arrayIndex = rowColToArrayIndex(eachColumn, eachRow);
 			if (trackGrid[arrayIndex] === 2) {
 				trackGrid[arrayIndex] = 0;
-				carX = eachColumn * trackWidth;
-				carY = eachRow * trackHeight;
+				// now we center the car within the bloack of road where the 2 was
+				carX = eachColumn * trackWidth + trackWidth / 2;
+				carY = eachRow * trackHeight + trackHeight / 2;
 			}
 		}
 	}
@@ -170,7 +180,10 @@ function moveAll() {
 
 function drawAll() {
 	colorRect(0, 0, canvas.width, canvas.height, 'black');
-	colorCircle(carX, carY, 10, 'white');
+	// colorCircle(carX, carY, 10, 'white');
+	if(carPicLoaded) {
+		canvasContext.drawImage(carPic, carX - carPic.width/2, carY - carPic.height/2);
+	}
 	drawTrack();
 }
 

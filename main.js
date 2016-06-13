@@ -3,10 +3,9 @@ var carPic = document.createElement('img');
 var carPicLoaded = false;
 
 var carX = 75;
-var carSpeedX = 5;
-
 var carY = 75;
-var carSpeedY = 5;
+var carAngle = 0;
+var carSpeed = 2;
 
 var mouseX = 0;
 var mouseY = 0;
@@ -83,21 +82,10 @@ function updateAll() {
 }
 
 function carMove() {
-	carX+= carSpeedX;
-	carY+= carSpeedY;
-	
-	if (carX < 0 && carSpeedX < 0.0) { // left
-		carSpeedX *= -1;
-	}
-	if (carX > canvas.width && carSpeedX > 0.0) { // right
-		carSpeedX *= -1;
-	}	
-	if (carY < 0) { // top
-		carSpeedY *= -1;
-	}
-	if (carY > canvas.height) { // bottom
-		carReset();
-	}
+	// sine and cosine decompose diagonal vector into it's horizontal and vertical components 
+	carX += Math.cos(carAngle) * carSpeed;
+	carY += Math.sin(carAngle) * carSpeed;
+	carAngle += 0.02;
 }
 
 function isTrackAtColRow(col, row) {
@@ -115,66 +103,18 @@ function carTrackHandling() {
 	var carTrackRow = Math.floor(carY / trackHeight);
 	var trackIndexUnderCar = rowColToArrayIndex(carTrackCol, carTrackRow);
 
-	// remove a track if hit, conditional allows us to check we're within bounds of game
-	// technically since we're using car center, the car can extend past the current index hit causing
-	// side-wall track to remove the following indexed track on the other side of the game board, since
-	// it doesn't recognize track wrap into more rows.  Just an arr of indexes to the game.
 	if(carTrackCol >= 0 && carTrackCol < trackColums &&
 		carTrackRow >= 0 && carTrackRow < trackRows) {
 
-		// only need to change car direction of remove track if track is there, don't change for
-		// track that already disappeared
+		// if bumps into a wall negate car speed to bounce in opposite direction
 		if(isTrackAtColRow( carTrackCol,carTrackRow )) {
-
-			/////////////////////////////////////////
-
-			// HERE WE CHANGE CAR DIRECTION
-			// from the moment before the track is hit compared to when the track is hit, if
-			// the row changes (i.e. row 2 to 3) we want to reflect the car vertically because we know
-			// we hit either the top of bottom.  If the column changes, we know we hit the left or
-			// right side and want to reflect the car horizontally.  If we manage to hit a corner, we
-			// need to change both x and y (since both row and col change), so we fire both changes below.
-
-			/////////////////////////////////////////
-
-			var prevCarX = carX - carSpeedX;
-			var prevCarY = carY - carSpeedY;
-			var prevTrackCol = Math.floor(prevCarX / trackWidth);
-			var prevTrackRow = Math.floor(prevCarY / trackHeight);
-
-			var bothTestsFailed = true;
-
-			// if there's not a track adjacent to the one hit then bounce horizontally
-			// otherwise there's a track there so we can't hit that side.
-			if(prevTrackCol != carTrackCol) {
-				if(isTrackAtColRow(prevTrackCol, carTrackRow) == false) {
-					carSpeedX *= -1;
-					bothTestsFailed = false;
-				}
-			}
-			if(prevTrackRow != carTrackRow) {
-				if(isTrackAtColRow(carTrackCol, prevTrackRow) == false) {
-					carSpeedY *= -1;
-					bothTestsFailed = false;
-				}
-			}
-
-			// prevents car from squeezing through gap between track if corner exposed,
-			// now bounces off corner properly
-			// |__|__|
-			//   /|  |
-			//
-			if(bothTestsFailed) {
-				carSpeedX *= -1;
-				carSpeedY *= -1;
-			}
-
+			carSpeed *= -1;
 		}
 	}
 } 
 
 function moveAll() {
-	// carMove();
+	carMove();
 	carTrackHandling();
 }
 
@@ -182,9 +122,19 @@ function drawAll() {
 	colorRect(0, 0, canvas.width, canvas.height, 'black');
 	// colorCircle(carX, carY, 10, 'white');
 	if(carPicLoaded) {
-		canvasContext.drawImage(carPic, carX - carPic.width/2, carY - carPic.height/2);
+		drawBitmapCenteredWithRotation(carPic, carX, carY, carAngle);
 	}
 	drawTrack();
+}
+
+function drawBitmapCenteredWithRotation(useBitmap, atX, atY, withAng) {
+
+	canvasContext.save();
+	canvasContext.translate(atX, atY);
+	canvasContext.rotate(withAng);
+	canvasContext.drawImage(useBitmap, -useBitmap.width/2, -useBitmap.height/2);
+	canvasContext.restore();
+
 }
 
 function colorRect(topLeftX, topLeftY, boxWidth, boxHeight, fillColor) {

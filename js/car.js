@@ -1,6 +1,4 @@
 var canvas, canvasContext;
-var carPic = document.createElement('img');
-var carPicLoaded = false;
 
 var carX = 75;
 var carY = 75;
@@ -11,7 +9,10 @@ var carSpeed = 0;
 var decelerationMultiple = 0.97;
 var drivePower = 0.5;
 var reversePower = 0.2;
-var turnRate = 0.04;
+var turnRate = 0.06;
+
+// use to make it so car can't spin in place
+var minSpeedToTurn = 0.5;
 
 function carReset() {
 	// loop through all rows and columns and if the index we're currently at has a 2, we place
@@ -30,13 +31,6 @@ function carReset() {
 	}
 }
 
-function carImageLoad() {
-	carPic.onload = function() {
-		carPicLoaded = true;
-	}
-	carPic.src = 'player1car.png';
-}
-
 function carMove() {
 
 	// here we degrade the speed a little bit each frame to mimic deceleration
@@ -49,11 +43,14 @@ function carMove() {
 	if (reverseKeyHeld) {
 		carSpeed -= reversePower;
 	}
-	if (leftKeyHeld) {
-		carAngle -= turnRate;
-	}
-	if (rightKeyHeld) {
-		carAngle += turnRate;
+	// stop car from spinning in circles when not accelerating or reversing
+	if (Math.abs(carSpeed) > minSpeedToTurn) {
+		if (leftKeyHeld) {
+			carAngle -= turnRate;
+		}
+		if (rightKeyHeld) {
+			carAngle += turnRate;
+		}
 	}
 	// sine and cosine decompose diagonal vector into it's horizontal and vertical components 
 	carX += Math.cos(carAngle) * carSpeed;
@@ -61,7 +58,5 @@ function carMove() {
 }
 
 function carDraw() {
-	if(carPicLoaded) {
-		drawBitmapCenteredWithRotation(carPic, carX, carY, carAngle);
-	}
+	drawBitmapCenteredWithRotation(carPic, carX, carY, carAngle);
 }

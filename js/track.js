@@ -4,31 +4,34 @@ var trackColums = 20;
 var trackRows = 15;
 var trackGap = 2;
 
-var trackGrid = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-				 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1,
-				 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+var trackGrid = [4, 4, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4,
+				 4, 4, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1,
+				 4, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
 				 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1,
-				 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1,
-				 1, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 1,
-				 1, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1,
-				 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1,
-				 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1,
-				 1, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1,
-				 1, 0, 2, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1,
+				 1, 0, 0, 0, 1, 1, 1, 4, 4, 4, 4, 1, 1, 1, 1, 1, 1, 0, 0, 1,
+				 1, 0, 0, 1, 1, 0, 0, 1, 4, 4, 1, 1, 0, 0, 0, 0, 1, 0, 0, 1,
+				 1, 0, 0, 1, 0, 0, 0, 0, 1, 4, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1,
+				 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 5, 0, 0, 1, 0, 0, 1,
+				 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1,
+				 1, 0, 0, 1, 0, 0, 5, 0, 0, 0, 5, 0, 0, 1, 0, 0, 1, 0, 0, 1,
+				 1, 0, 2, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 5, 0, 0, 1,
 				 1, 1, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1,
-				 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1,
-				 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1,
-				 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
+				 0, 3, 0, 0, 0, 0, 1, 4, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1,
+				 0, 3, 0, 0, 0, 0, 1, 4, 4, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1,
+				 1, 1, 1, 1, 1, 1, 1, 4, 4, 4, 4, 4, 4, 4, 1, 1, 1, 1, 1, 4];
 
 var trackRoad = 0;
 var trackWall = 1;
 var playerStart = 2;
+var trackGoal = 3;
+var trackTree = 4;
+var trackFlag = 5;
 
-function isWallAtColRow(col, row) {
+function isObstacleAtColRow(col, row) {
 	if(col >= 0 && col < trackColums &&
 		row >= 0 && row < trackRows) {
 		 var trackIndexUnderCoord = rowColToArrayIndex(col, row);
-		 return trackGrid[trackIndexUnderCoord] === trackWall;
+		 return trackGrid[trackIndexUnderCoord] !== trackRoad;
 	} else {
 		return false;
 	}
@@ -43,7 +46,7 @@ function carTrackHandling() {
 		carTrackRow >= 0 && carTrackRow < trackRows) {
 
 		// if bumps into a wall negate car speed to bounce in opposite direction
-		if(isWallAtColRow( carTrackCol,carTrackRow )) {
+		if(isObstacleAtColRow( carTrackCol,carTrackRow )) {
 
 			// here we fix a bug where car movement would sometimes get it stuck in a wall
 			// basically undoes the cars recent motionso that it's center no longer
@@ -68,10 +71,29 @@ function drawTrack() {
 
 			// for each row we go down, add an entire row (or set of columns) to our index.  For each over, add 1 column.
 			var arrayIndex = rowColToArrayIndex(eachColumn, eachRow);
+			var tileType = trackGrid[arrayIndex];
+			var useImage;
 
-			if (trackGrid[arrayIndex] === trackWall) {
-				colorRect(trackWidth * eachColumn, trackHeight * eachRow, trackWidth - trackGap, trackHeight - trackGap, 'blue');
+			// draw images depending on the value of current index
+			switch(tileType) {
+				case trackRoad:
+					useImage = roadPic;
+					break;
+				case trackWall:
+					useImage = wallPic;
+					break;
+				case trackGoal:
+					useImage = goalPic;
+					break;
+				case trackTree:
+					useImage = treePic;
+					break;	
+				case trackFlag:
+					useImage = flagPic;				
 			}
+
+			// draws image from top left corner of segment
+			canvasContext.drawImage(useImage, trackWidth * eachColumn, trackHeight * eachRow);
 		}
 	}
 }

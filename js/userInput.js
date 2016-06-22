@@ -8,9 +8,9 @@ var rightArrowKey = 39;
 var downArrowKey = 40;
 
 var wKey = 87;
-var aKey = 68;
+var aKey = 65;
 var sKey = 83;
-var dKey = 65;
+var dKey = 68;
 
 function setupInput() {
 	canvas.addEventListener('mousemove', updateMousePosition);

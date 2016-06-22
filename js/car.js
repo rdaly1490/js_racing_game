@@ -10,11 +10,14 @@ function carClass() {
 
 	this.x = 75;
 	this.y = 75;
-	//this.angle is in radians
-	this.angle = 0;
+	this.angle = 0; // measured in radians
 	this.speed = 0;
+	this.myCarPic; // which pic to use
 
-	this.reset = function() {
+	this.reset = function(whichCarImage) {
+		
+		this.myCarPic = whichCarImage;
+
 		// loop through all rows and columns and if the index we're currently at has a 2, we place
 		// the car there, then change that index to a 0 after (to make it normal road)
 		for (var eachRow = 0; eachRow < trackRows; eachRow++) {
@@ -63,6 +66,6 @@ function carClass() {
 	}
 
 	this.draw = function() {
-		drawBitmapCenteredWithRotation(carPic, this.x, this.y, this.angle);
+		drawBitmapCenteredWithRotation(this.myCarPic, this.x, this.y, this.angle);
 	}
 }

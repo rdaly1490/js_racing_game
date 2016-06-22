@@ -26,6 +26,7 @@ var playerStart = 2;
 var trackGoal = 3;
 var trackTree = 4;
 var trackFlag = 5;
+// to add new more track types in the future just add new var here and to imageList in ImageLoading.js
 
 function isObstacleAtColRow(col, row) {
 	if(col >= 0 && col < trackColums &&
@@ -66,34 +67,26 @@ function rowColToArrayIndex(col, row) {
 
 function drawTrack() {
 
+	var arrayIndex = 0;
+	var drawTileX = 0;
+	var drawTileY = 0;
 	for (var eachRow = 0; eachRow < trackRows; eachRow++) {
 		for (var eachColumn = 0; eachColumn < trackColums; eachColumn++) {
 
-			// for each row we go down, add an entire row (or set of columns) to our index.  For each over, add 1 column.
-			var arrayIndex = rowColToArrayIndex(eachColumn, eachRow);
 			var tileType = trackGrid[arrayIndex];
-			var useImage;
 
 			// draw images depending on the value of current index
-			switch(tileType) {
-				case trackRoad:
-					useImage = roadPic;
-					break;
-				case trackWall:
-					useImage = wallPic;
-					break;
-				case trackGoal:
-					useImage = goalPic;
-					break;
-				case trackTree:
-					useImage = treePic;
-					break;	
-				case trackFlag:
-					useImage = flagPic;				
-			}
+			var useImage = trackPics[tileType];
 
 			// draws image from top left corner of segment
-			canvasContext.drawImage(useImage, trackWidth * eachColumn, trackHeight * eachRow);
+			canvasContext.drawImage(useImage, drawTileX, drawTileY);
+
+			drawTileX += trackWidth;
+			arrayIndex++;
 		}
+		drawTileY += trackHeight;
+		// kind of like a typewriter, want to go to end of page then shoot back to the beginning
+		// and start drawing again from there
+		drawTileX = 0;
 	}
 }

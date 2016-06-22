@@ -10,6 +10,7 @@ function carClass() {
 	this.angle = 0; // measured in radians
 	this.speed = 0;
 	this.myCarPic; // which pic to use
+	this.name = 'Untitled Car'; // name used when declaring winner
 
 	// help stop stacking keydown/up events, act more like a game controller button
 	// instead of keyboard input by telling if buttons are held down
@@ -33,9 +34,10 @@ function carClass() {
 		this.controlLeft = left;
 	}
 
-	this.reset = function(whichCarImage) {
-
+	this.reset = function(whichCarImage, carName) {
+		this.name = carName;
 		this.myCarPic = whichCarImage;
+		this.speed = 0;
 
 		// loop through all rows and columns and if the index we're currently at has a 2, we place
 		// the car there, then change that index to a 0 after (to make it normal road)

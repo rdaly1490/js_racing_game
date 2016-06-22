@@ -21,14 +21,26 @@ function startGame() {
 	setInterval(updateAll, 1000/fps);
 
 	setupInput();
-	blueCar.reset(blueCarPic);
-	greenCar.reset(greenCarPic);
+
+	// preserve a clean copy of levelOne that can be reloaded at any point
+	loadLevel(levelOne);
+}
+
+function loadLevel(whichLevel) {
+	// copy the array using slice. Cant just set equal to whichLevel since 
+	// it'll just point to the same spot in memory otherwise.  Without this changing
+	// the array values from 2 to 0 for car starting point, wont be able to reset game
+	// to play again properly
+	trackGrid = whichLevel.slice();
+
+	blueCar.reset(blueCarPic, 'Blue Steel');
+	greenCar.reset(greenCarPic, 'Green mcGreenFace');
 }
 
 function updateAll() {
 	moveAll();
 	drawAll();
-} 
+}
 
 function moveAll() {
 	blueCar.move();

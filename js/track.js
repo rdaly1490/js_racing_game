@@ -4,7 +4,7 @@ var trackColums = 20;
 var trackRows = 15;
 var trackGap = 2;
 
-var trackGrid = [4, 4, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4,
+var levelOne = [4, 4, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4,
 				 4, 4, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1,
 				 4, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
 				 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1,
@@ -20,6 +20,9 @@ var trackGrid = [4, 4, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4,
 				 0, 3, 0, 0, 0, 0, 1, 4, 4, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1,
 				 1, 1, 1, 1, 1, 1, 1, 4, 4, 4, 4, 4, 4, 4, 1, 1, 1, 1, 1, 4];
 
+// here we'll store a copy of the current level via the loadLevel function
+var trackGrid = [];
+
 var trackRoad = 0;
 var trackWall = 1;
 var playerStart = 2;
@@ -28,13 +31,14 @@ var trackTree = 4;
 var trackFlag = 5;
 // to add new more track types in the future just add new var here and to imageList in ImageLoading.js
 
-function isObstacleAtColRow(col, row) {
+function returnTileTypeAtColRow(col, row) {
 	if(col >= 0 && col < trackColums &&
 		row >= 0 && row < trackRows) {
 		 var trackIndexUnderCoord = rowColToArrayIndex(col, row);
-		 return trackGrid[trackIndexUnderCoord] !== trackRoad;
+		 return trackGrid[trackIndexUnderCoord];
 	} else {
-		return false;
+		// treat anything out of world bounds as wall just in case
+		return trackWall;
 	}
 }
 
@@ -46,8 +50,12 @@ function carTrackHandling(whichCar) {
 	if(carTrackCol >= 0 && carTrackCol < trackColums &&
 		carTrackRow >= 0 && carTrackRow < trackRows) {
 
+		var tileHere = returnTileTypeAtColRow(carTrackCol,carTrackRow);
 		// if bumps into a wall negate car speed to bounce in opposite direction
-		if(isObstacleAtColRow( carTrackCol,carTrackRow )) {
+		if(tileHere === trackGoal) {
+			loadLevel(levelOne);
+			console.log(whichCar.name + ' won the race!!');
+		} else if (tileHere !== trackRoad) {
 
 			// here we fix a bug where car movement would sometimes get it stuck in a wall
 			// basically undoes the cars recent motionso that it's center no longer
@@ -70,6 +78,7 @@ function drawTrack() {
 	var arrayIndex = 0;
 	var drawTileX = 0;
 	var drawTileY = 0;
+
 	for (var eachRow = 0; eachRow < trackRows; eachRow++) {
 		for (var eachColumn = 0; eachColumn < trackColums; eachColumn++) {
 

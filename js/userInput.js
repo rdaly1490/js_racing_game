@@ -7,53 +7,47 @@ var upArrowKey = 38;
 var rightArrowKey = 39; 
 var downArrowKey = 40;
 
-// help stop stacking key events, act more like a game controller button
-// instead of keyboard input by telling if buttons are held down
-var gasKeyHeld = false;
-var reverseKeyHeld = false;
-var leftKeyHeld = false;
-var rightKeyHeld = false;
+var wKey = 87;
+var aKey = 68;
+var sKey = 83;
+var dKey = 65;
 
 function setupInput() {
-	canvas.addEventListener('mousemove', updateMousePosition)
+	canvas.addEventListener('mousemove', updateMousePosition);
 
-	document.addEventListener('keydown', keyPressed)
-	document.addEventListener('keyup', keyReleased)
+	document.addEventListener('keydown', keyPressed);
+	document.addEventListener('keyup', keyReleased);
+
+	greenCar.setupInput(upArrowKey, downArrowKey, rightArrowKey, leftArrowKey);
+	blueCar.setupInput(wKey, sKey, dKey, aKey);
+}
+
+function keySet(keyEvent, whichCar, setTo) {
+	// preventDefault stops page itself from scrolling left or right
+	keyEvent.preventDefault();
+
+	if (keyEvent.keyCode === whichCar.controlLeft) {
+		whichCar.leftKeyHeld = setTo;
+	}
+	if (keyEvent.keyCode === whichCar.controlRight) {
+		whichCar.rightKeyHeld = setTo;
+	}
+	if (keyEvent.keyCode === whichCar.controlUp) {
+		whichCar.gasKeyHeld = setTo;
+	}
+	if (keyEvent.keyCode === whichCar.controlDown) {
+		whichCar.reverseKeyHeld = setTo;
+	}
 }
 
 function keyPressed(e) {
-	// preventDefault stops page from scrolling left or right
-	e.preventDefault();
-
-	if (e.keyCode === leftArrowKey) {
-		leftKeyHeld = true;
-	}
-	if (e.keyCode === rightArrowKey) {
-		rightKeyHeld = true;
-	}
-	if (e.keyCode === upArrowKey) {
-		gasKeyHeld = true;
-	}
-	if (e.keyCode === downArrowKey) {
-		reverseKeyHeld = true;
-	}
+	keySet(e, blueCar, true);
+	keySet(e, greenCar, true);
 }
 
 function keyReleased(e) {
-	e.preventDefault();
-
-	if (e.keyCode === leftArrowKey) {
-		leftKeyHeld = false;
-	}
-	if (e.keyCode === rightArrowKey) {
-		rightKeyHeld = false;
-	}
-	if (e.keyCode === upArrowKey) {
-		gasKeyHeld = false;
-	}
-	if (e.keyCode === downArrowKey) {
-		reverseKeyHeld = false;
-	}
+	keySet(e, blueCar, false);
+	keySet(e, greenCar, false);
 }
 
 function updateMousePosition(e) {

@@ -3,9 +3,6 @@ var drivePower = 0.5;
 var reversePower = 0.2;
 var turnRate = 0.06;
 
-// use to make it so car can't spin in place
-var minSpeedToTurn = 0.5;
-
 function carClass() {
 
 	this.x = 75;
@@ -14,8 +11,30 @@ function carClass() {
 	this.speed = 0;
 	this.myCarPic; // which pic to use
 
+	// help stop stacking keydown/up events, act more like a game controller button
+	// instead of keyboard input by telling if buttons are held down
+	this.gasKeyHeld = false;
+	this.reverseKeyHeld = false;
+	this.leftKeyHeld = false;
+	this.rightKeyHeld = false;
+
+	// use to make it so car can't spin in place
+	this.minSpeedToTurn = 0.5;
+
+	this.controlUp;
+	this.controlDown;
+	this.controlRight;
+	this.controlLeft;
+
+	this.setupInput = function(up, down, right, left) {
+		this.controlUp = up;
+		this.controlDown = down;
+		this.controlRight = right;
+		this.controlLeft = left;
+	}
+
 	this.reset = function(whichCarImage) {
-		
+
 		this.myCarPic = whichCarImage;
 
 		// loop through all rows and columns and if the index we're currently at has a 2, we place
@@ -43,18 +62,18 @@ function carClass() {
 		// if someone lets off the gas without hittin the break (lose (1.00 - x)% of speed per frame)
 		this.speed *= decelerationMultiple;
 
-		if (gasKeyHeld) {
+		if (this.gasKeyHeld) {
 			this.speed += drivePower;
 		}
-		if (reverseKeyHeld) {
+		if (this.reverseKeyHeld) {
 			this.speed -= reversePower;
 		}
 		// stop car from spinning in circles when not accelerating or reversing
-		if (Math.abs(this.speed) > minSpeedToTurn) {
-			if (leftKeyHeld) {
+		if (Math.abs(this.speed) > this.minSpeedToTurn) {
+			if (this.leftKeyHeld) {
 				this.angle -= turnRate;
 			}
-			if (rightKeyHeld) {
+			if (this.rightKeyHeld) {
 				this.angle += turnRate;
 			}
 		}

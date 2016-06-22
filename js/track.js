@@ -14,7 +14,7 @@ var trackGrid = [4, 4, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4,
 				 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 5, 0, 0, 1, 0, 0, 1,
 				 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1,
 				 1, 0, 0, 1, 0, 0, 5, 0, 0, 0, 5, 0, 0, 1, 0, 0, 1, 0, 0, 1,
-				 1, 0, 2, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 5, 0, 0, 1,
+				 1, 2, 2, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 5, 0, 0, 1,
 				 1, 1, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1,
 				 0, 3, 0, 0, 0, 0, 1, 4, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1,
 				 0, 3, 0, 0, 0, 0, 1, 4, 4, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1,
@@ -38,9 +38,9 @@ function isObstacleAtColRow(col, row) {
 	}
 }
 
-function carTrackHandling() {
-	var carTrackCol = Math.floor(carX / trackWidth);
-	var carTrackRow = Math.floor(carY / trackHeight);
+function carTrackHandling(whichCar) {
+	var carTrackCol = Math.floor(whichCar.x / trackWidth);
+	var carTrackRow = Math.floor(whichCar.y / trackHeight);
 	var trackIndexUnderCar = rowColToArrayIndex(carTrackCol, carTrackRow);
 
 	if(carTrackCol >= 0 && carTrackCol < trackColums &&
@@ -52,11 +52,11 @@ function carTrackHandling() {
 			// here we fix a bug where car movement would sometimes get it stuck in a wall
 			// basically undoes the cars recent motionso that it's center no longer
 			// overlaps a wall
-			carX -= Math.cos(carAngle) * carSpeed;
-			carY -= Math.sin(carAngle) * carSpeed;
+			whichCar.x -= Math.cos(whichCar.angle) * whichCar.speed;
+			whichCar.y -= Math.sin(whichCar.angle) * whichCar.speed;
 
 			// here we bounce the car backwards if user crashes into a wall
-			carSpeed *= -0.5;
+			whichCar.speed *= -0.5;
 		}
 	}
 }
